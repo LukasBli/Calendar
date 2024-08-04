@@ -57,6 +57,7 @@ namespace WeeklyPlanner.Core.Models
                 appointmentType = value;
                 AppointmentTypeSettings();
                 OnPropertyChanged(nameof(AppointmentType));
+                OnPropertyChanged(nameof(IsSaveButtonEnabled));
             }
         }
 
@@ -82,6 +83,7 @@ namespace WeeklyPlanner.Core.Models
                     endTime = DateTime.Today.Add(new TimeSpan(20, 0, 0));
                 }
                 OnPropertyChanged(nameof(EndTime));
+                OnPropertyChanged(nameof(Height));
             }
         }
 
@@ -170,11 +172,11 @@ namespace WeeklyPlanner.Core.Models
         {
             get
             {
-                return mSideBackgroundColor;
+                return sideBackgroundColor;
             }
             set
             {
-                mSideBackgroundColor = value;
+                sideBackgroundColor = value;
                 OnPropertyChanged(nameof(SideBackgroundColor));
                 OnPropertyChanged(nameof(SideBackgroundBrush));
             }
@@ -185,7 +187,7 @@ namespace WeeklyPlanner.Core.Models
         {
             get
             {
-                SolidColorBrush sideBackgroundBrush = new SolidColorBrush(mSideBackgroundColor);
+                SolidColorBrush sideBackgroundBrush = new SolidColorBrush(sideBackgroundColor);
                 return sideBackgroundBrush;
             }
         }
@@ -212,6 +214,19 @@ namespace WeeklyPlanner.Core.Models
                     startTime = DateTime.Today.Add(new TimeSpan(8, 0, 0));
                 }
                 OnPropertyChanged(nameof(StartTime));
+                OnPropertyChanged(nameof(StartTimeString));
+                OnPropertyChanged(nameof(EntryMargin));
+                OnPropertyChanged(nameof(Height));
+            }
+        }
+
+        // TODO: Dafür einen Converter schreiben
+        [NotMapped]
+        public string StartTimeString
+        {
+            get
+            {
+                return StartTime.Value.ToString("HH:mm");
             }
         }
 
@@ -225,6 +240,7 @@ namespace WeeklyPlanner.Core.Models
             {
                 title = value;
                 OnPropertyChanged(nameof(Title));
+                OnPropertyChanged(nameof(IsSaveButtonEnabled));
             }
         }
 
@@ -232,6 +248,7 @@ namespace WeeklyPlanner.Core.Models
         private DateTime? appointmentDate = DateTime.Now;
         private string? appointmentType;
         private DateTime? endTime;
+        private Color sideBackgroundColor;
         private DateTime? startTime = DateTime.Now;
         private string? title;
 
@@ -265,21 +282,21 @@ namespace WeeklyPlanner.Core.Models
         {
             if (appointmentType == "Arbeit")
             {
-                //mSideBackgroundColor = Colors.Red;
-                //if (mStartTime.HasValue)
-                EndTime = startTime.Value.AddHours(8.5);
+                sideBackgroundColor = Colors.Red;
+                if (StartTime.HasValue)
+                EndTime = StartTime.Value.AddHours(8.5);
             }
             else if (appointmentType == "Freizeit")
             {
-                //mSideBackgroundColor = Colors.Green;
-                //if (mStartTime.HasValue)
-                EndTime = startTime.Value.AddHours(0.5);
+                SideBackgroundColor = Colors.Green;
+                if (StartTime.HasValue)
+                EndTime = StartTime.Value.AddHours(0.5);
             }
             else if (appointmentType == "Termin")
             {
-                //mSideBackgroundColor = Colors.Orange;
-                //if (mStartTime.HasValue)
-                EndTime = startTime.Value.AddHours(1);
+                SideBackgroundColor = Colors.Orange;
+                if (StartTime.HasValue)
+                EndTime = StartTime.Value.AddHours(1);
             }
             OnPropertyChanged(nameof(EndTime));
         }

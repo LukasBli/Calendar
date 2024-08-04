@@ -45,17 +45,17 @@
             <ComboBoxItem Content="Termin"/>
         </ComboBox>
         <TextBox Text="{Binding SelectedAppointment.Description}" Grid.Row="2" Grid.Column="1" Margin="3,3,5,3" AcceptsReturn="True"/>
-        <CheckBox IsChecked="{Binding IsFullDay}" Grid.Row="3" Grid.Column="1" Margin="3" VerticalContentAlignment="Center"/>
+        <CheckBox IsChecked="{Binding SelectedAppointment.IsFullDay}" Grid.Row="3" Grid.Column="1" Margin="3" VerticalContentAlignment="Center"/>
         <DatePicker SelectedDate="{Binding SelectedAppointment.AppointmentDate}" Grid.Row="4" Grid.Column="1" Margin="3,2,5,2"/>
         <xctk:TimePicker Format="ShortTime" Grid.Row="5" Value="{Binding SelectedAppointment.StartTime, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.Column="1" Margin="3,2,5,2" HorizontalAlignment="Left" Width="100"/>
         <TextBlock Text="-" Grid.Row="5" Grid.Column="1" Margin="3,2,3,2" HorizontalAlignment="Center"/>
         <xctk:TimePicker Format="ShortTime" Grid.Row="5" Value="{Binding SelectedAppointment.EndTime, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.Column="1" Margin="3,2,5,2" HorizontalAlignment="Right" Width="100"/>
-        <xctk:ColorPicker Grid.Row="6" Grid.Column="1" SelectedColor="{Binding SideBackgroundColor}" DisplayColorAndName="True"  Margin="3,3,5,3"/>
+        <xctk:ColorPicker Grid.Row="6" Grid.Column="1" SelectedColor="{Binding SelectedAppointment.SideBackgroundColor}" DisplayColorAndName="True"  Margin="3,3,5,3"/>
 
         <Button Content="Speichern"
                             Grid.Row="12"
                             Grid.Column="1"
-                            IsEnabled="{Binding IsSaveButtonEnabled}"
+                            IsEnabled="{Binding SelectedAppointment.IsSaveButtonEnabled}"
                             Command="{Binding SaveAppointmentCommand}"
                             CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                             Margin="3,3,90,5"

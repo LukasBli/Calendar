@@ -158,8 +158,8 @@
                                     <Border Background="White"
                                             BorderBrush="Black"
                                             BorderThickness="1"
-                                            Height="{Binding Height, UpdateSourceTrigger=PropertyChanged}"
-                                            Margin="{Binding EntryMargin}"
+                                            Height="{Binding SelectedAppointment.Height, UpdateSourceTrigger=PropertyChanged}"
+                                            Margin="{Binding SelectedAppointment.EntryMargin}"
                                             VerticalAlignment="Top">
                                         <Border.InputBindings>
                                             <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding OpenAppointmentCommand}"/>
@@ -174,7 +174,7 @@
                                             </Grid.ColumnDefinitions>
 
                                             <!-- Inneres Border -->
-                                            <Border Background="{Binding SideBackgroundBrush, UpdateSourceTrigger=PropertyChanged}"
+                                            <Border Background="{Binding SelectedAppointment.SideBackgroundBrush, UpdateSourceTrigger=PropertyChanged}"
                                             BorderBrush="Black"
                                             BorderThickness="1"
                                             Width="10"
@@ -190,7 +190,7 @@
 
                                             <!-- StackPanel 2 -->
                                             <StackPanel Grid.Column="2">
-                                                <TextBlock Text="{Binding StartTimeString}" Margin="3,1,0,0"/>
+                                                <TextBlock Text="{Binding SelectedAppointment.StartTimeString}" Margin="3,1,0,0"/>
                                             </StackPanel>
                                         </Grid>
                                     </Border>

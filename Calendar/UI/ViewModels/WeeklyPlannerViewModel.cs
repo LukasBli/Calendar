@@ -9,19 +9,23 @@ using WeeklyPlanner.Core.Models;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
 
 namespace WeeklyPlanner.UI.ViewModels
 {
     public partial class WeeklyPlannerViewModel : ObservableObject, INotifyPropertyChanged
     {
         private readonly IServiceProvider mServiceProvider;
+        private readonly IAppointmentRepository mAppointmentRepository;
 
         public ObservableCollection<AppointmentViewModel> AppointmentViewModels { get; set; } = new ObservableCollection<AppointmentViewModel>();
 
-        public WeeklyPlannerViewModel(IServiceProvider serviceProvider)
+        public WeeklyPlannerViewModel(IAppointmentRepository appointmentRepository ,IServiceProvider serviceProvider)
         {
             SetWeek(DateTime.Now);
             mServiceProvider = serviceProvider;
+            mAppointmentRepository = appointmentRepository;
+            //LoadAppointments();
         }
 
         [RelayCommand]
@@ -43,6 +47,18 @@ namespace WeeklyPlanner.UI.ViewModels
             AppointmentViewModels.Add(appointmentViewModel);
             OnPropertyChanged(nameof(AppointmentViewModels));
         }
+
+        // In Arbeits
+        //public async void LoadAppointments()
+        //{
+        //    IEnumerable<Appointment> allAppointments = await mAppointmentRepository.GetAllAsync();
+        //    IEnumerable<Appointment> weekAppointments = allAppointments.Where(appointment => appointment.AppointmentDate.Value <= DateTime.Parse (SundayDate) && appointment.AppointmentDate.Value >= DateTime.Parse (MondayDate));
+        //    AppointmentViewModels.Select(a => new AppointmentViewModel(mAppointmentRepository, mServiceProvider)
+        //    {
+        //        SelectedAppointment = a.SelectedAppointment,
+        //    });
+        //    OnPropertyChanged(nameof(AppointmentViewModel.SelectedAppointment));
+        //}
 
         [RelayCommand]
         private void LoadWeeklyplannerView()
