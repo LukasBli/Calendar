@@ -1,11 +1,15 @@
-﻿<UserControl x:Class="WeeklyPlanner.View.WeeklyPlannerControl"
+﻿<UserControl x:Class="WeeklyPlanner.UI.Views.WeeklyPlannerView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:WeeklyPlanner.View"
-             mc:Ignorable="d" 
+             xmlns:v="clr-namespace:WeeklyPlanner.UI.Views"
+             xmlns:converters="clr-namespace:WeeklyPlanner.UI.Converters"
+             mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <converters:DateTimeToDayOfWeekInIntConverter x:Key="dateTimeToDayOfWeekInIntConverter" />
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
@@ -27,9 +31,9 @@
         </Grid.ColumnDefinitions>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0" Grid.ColumnSpan="10">
-            <Button Content="&lt;" Width="30" Height="30" Click="ClickLastWeek" FontWeight="Bold"/>
+            <Button Content="&lt;" Width="30" Height="30" Command="{Binding ChangeToLastWeekCommand}" FontWeight="Bold"/>
             <TextBlock Text="{Binding WeekOfYearText, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" VerticalAlignment="Center" FontWeight="Bold"/>
-            <Button Content=">" Width="30" Height="30" Click="ClickNextWeek" FontWeight="Bold"/>
+            <Button Content=">" Width="30" Height="30" Command="{Binding ChangeToNextWeekCommand}" FontWeight="Bold"/>
         </StackPanel>
         <Border Name="borMonday" BorderBrush="Black" BorderThickness="1" Grid.Row="1" Grid.Column="1" Margin="0,3,0,0">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -81,8 +85,8 @@
         <Border BorderBrush="Black" BorderThickness="1" Grid.Row="2" Grid.Column="6"/>
         <Border BorderBrush="Black" BorderThickness="1" Grid.Row="2" Grid.Column="7"/>
 
-        <ScrollViewer Name="scroller" Grid.Row="3" Grid.ColumnSpan="9" VerticalAlignment="Top">
-            <Grid x:Name="interfaceGrid">
+        <ScrollViewer Grid.Row="3" Grid.ColumnSpan="9" VerticalAlignment="Top">
+            <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="50"/>
                     <ColumnDefinition Width="*"/>
@@ -103,7 +107,7 @@
                 <Border BorderBrush="Black" BorderThickness="1" Grid.Column="0" Height="120" VerticalAlignment="Top">
                     <Border.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Termin erstellen" Click="ClickCreateAppointment" Tag="8"/>
+                            <MenuItem Header="Termin erstellen" Command="{Binding CreateAppointmentCommand}"/>
                         </ContextMenu>
                     </Border.ContextMenu>
                     <TextBlock Text="8:00" HorizontalAlignment="Center" Margin="0,0,1,0"/>
@@ -131,6 +135,70 @@
                 <Border BorderBrush="Gray" BorderThickness="1" Grid.Column="1" Grid.ColumnSpan="7" Height="1" VerticalAlignment="Top" Margin="0,1320,0,0"/>
                 <TextBlock Text="19:00" HorizontalAlignment="Center" Margin="0,1320,1,0"/>
                 <TextBlock Text="20:00" HorizontalAlignment="Center" Margin="0,1440,1,0"/>
+                <ItemsControl ItemsSource="{Binding AppointmentViewModels, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="8">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Grid/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="{Binding SelectedAppointment.AppointmentDate, Converter={StaticResource dateTimeToDayOfWeekInIntConverter}}">
+                                    <Border Background="White"
+                                            BorderBrush="Black"
+                                            BorderThickness="1"
+                                            Height="{Binding Height, UpdateSourceTrigger=PropertyChanged}"
+                                            Margin="{Binding EntryMargin}"
+                                            VerticalAlignment="Top">
+                                        <Border.InputBindings>
+                                            <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding OpenAppointmentCommand}"/>
+                                        </Border.InputBindings>
+
+                                        <!-- Grid-Definition innerhalb der Border -->
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="10"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="40"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Inneres Border -->
+                                            <Border Background="{Binding SideBackgroundBrush, UpdateSourceTrigger=PropertyChanged}"
+                                            BorderBrush="Black"
+                                            BorderThickness="1"
+                                            Width="10"
+                                            HorizontalAlignment="Left"
+                                            Grid.Column="0"/>
+
+                                            <!-- StackPanel 1 -->
+                                            <StackPanel Grid.Column="1">
+                                                <TextBlock Text="{Binding SelectedAppointment.Title}" Margin="3,1,0,0"/>
+                                                <TextBlock Text="{Binding SelectedAppointment.AppointmentType}" Margin="3,1,0,0"/>
+                                                <TextBlock Text="{Binding SelectedAppointment.Description}" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" Margin="3,1,0,0"/>
+                                            </StackPanel>
+
+                                            <!-- StackPanel 2 -->
+                                            <StackPanel Grid.Column="2">
+                                                <TextBlock Text="{Binding StartTimeString}" Margin="3,1,0,0"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </Grid>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </Grid>
         </ScrollViewer>
     </Grid>

@@ -8,6 +8,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WeeklyPlanner.UI.ViewModels;
+using WeeklyPlanner.UI.Views;
 
 namespace Calendar
 {
@@ -16,9 +18,10 @@ namespace Calendar
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        public MainWindow(WeeklyPlannerViewModel weeklyPlannerViewModel)
         {
             InitializeComponent();
+            DataContext = weeklyPlannerViewModel;
         }
     }
 }
