@@ -24,7 +24,7 @@ namespace WeeklyPlanner.Data.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Server=DESKTOP-G41ADTG;Database=Calendar;Trusted_Connection=True;Encrypt=True;TrustServerCertificate=True;");
+                optionsBuilder.UseSqlServer("CONNECTIONSTRING");
             }
         }
 

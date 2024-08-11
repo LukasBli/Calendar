@@ -15,7 +15,7 @@ namespace WeeklyPlanner.Data.Data
         public ApplicationDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            optionsBuilder.UseSqlServer("Server=DESKTOP-G41ADTG;Database=Calendar;Trusted_Connection=True;Encrypt=True;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer("CONNECTIONSTRING");
 
             return new ApplicationDbContext(optionsBuilder.Options);
         }

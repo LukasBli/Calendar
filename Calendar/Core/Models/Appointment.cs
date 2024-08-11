@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Windows;
@@ -12,26 +11,12 @@ namespace WeeklyPlanner.Core.Models
     /// </summary>
     public class Appointment : INotifyPropertyChanged
     {
-        [Key]
-        public int Id
-        {
-            get;
-            set;
-        }
 
-        public string? Description
-        {
-            get
-            {
-                return description;
-            }
-            set
-            {
-                description = value;
-                OnPropertyChanged(nameof(Description));
-            }
-        }
+        #region Properties
 
+        /// <summary>
+        /// Ruft die Datum ab oder legt es fest.
+        /// </summary>
         [DataType(DataType.Date)]
         public DateTime? AppointmentDate
         {
@@ -46,6 +31,9 @@ namespace WeeklyPlanner.Core.Models
             }
         }
 
+        /// <summary>
+        /// Ruft den Typ des Termin ab oder legt diesen fest.
+        /// </summary>
         public string? AppointmentType
         {
             get
@@ -61,6 +49,25 @@ namespace WeeklyPlanner.Core.Models
             }
         }
 
+        /// <summary>
+        /// Ruft die Beschreibung ab oder legt sie fest.
+        /// </summary>
+        public string? Description
+        {
+            get
+            {
+                return description;
+            }
+            set
+            {
+                description = value;
+                OnPropertyChanged(nameof(Description));
+            }
+        }
+
+        /// <summary>
+        /// Ruft das Enddatum ab oder legt es fest.
+        /// </summary>
         [DataType(DataType.Time)]
         public DateTime? EndTime
         {
@@ -70,25 +77,27 @@ namespace WeeklyPlanner.Core.Models
             }
             set
             {
-                if (value < startTime)
-                {
-                    endTime = startTime;
+                if (value != null) {
+                    if (value.Value.TimeOfDay < startTime.Value.TimeOfDay)
+                    {
+                        endTime = startTime;
+                    }
+                    else if (value.Value.TimeOfDay < DateTime.Today.Add(new TimeSpan(20, 0, 0)).TimeOfDay)
+                    {
+                        endTime = RoundToNearestInterval(value, TimeSpan.FromMinutes(5));
+                    }
+                    else
+                    {
+                        endTime = DateTime.Today.Add(new TimeSpan(20, 0, 0));
+                    }
+                    OnPropertyChanged(nameof(EndTime));
+                    OnPropertyChanged(nameof(Height));
                 }
-                else if (value < DateTime.Today.Add(new TimeSpan(20, 0, 0)))
-                {
-                    endTime = RoundToNearestInterval(value, TimeSpan.FromMinutes(5));
-                }
-                else
-                {
-                    endTime = DateTime.Today.Add(new TimeSpan(20, 0, 0));
-                }
-                OnPropertyChanged(nameof(EndTime));
-                OnPropertyChanged(nameof(Height));
             }
         }
 
         /// <summary>
-        /// Ruft die Margin eines Eintrags ab oder legt sie fest.
+        /// Ruft die Margin eines Termineintrag ab oder legt es fest.
         /// </summary>
         [NotMapped]
         public Thickness EntryMargin
@@ -108,25 +117,35 @@ namespace WeeklyPlanner.Core.Models
         }
 
         /// <summary>
-        /// Ruft die Höhe eines Eintrags ab.
+        /// Ruft die Höhe eines Termineintrag ab.
         /// </summary>
         [NotMapped]
         public double Height
         {
             get
             {
-                if (startTime.HasValue && endTime.HasValue)
+                if (StartTime.HasValue && EndTime.HasValue)
                 {
-                    int startHours = startTime.Value.Hour;
-                    int startMinute = startTime.Value.Minute;
-                    int endHours = endTime.Value.Hour;
-                    int endMinute = endTime.Value.Minute;
+                    int startHours = StartTime.Value.Hour;
+                    int startMinute = StartTime.Value.Minute;
+                    int endHours = EndTime.Value.Hour;
+                    int endMinute = EndTime.Value.Minute;
 
                     int newHeight = (endHours - startHours) * 120 + (endMinute - startMinute) * 2;
                     return newHeight;
                 }
                 return 0;
             }
+        }
+
+        /// <summary>
+        /// Ruft die Id des Termineintrag ab oder legt es fest.
+        /// </summary>
+        [Key]
+        public int Id
+        {
+            get;
+            set;
         }
 
         /// <summary>
@@ -165,47 +184,39 @@ namespace WeeklyPlanner.Core.Models
         }
 
         /// <summary>
-        /// Ruft die Seitlichefarbe ab oder legt sie fest.
+        /// Ruft den Hexadezimalcode der Seitenhintergrundfarbe ab oder legt es fest.
         /// </summary>
-        [NotMapped]
-        public Color SideBackgroundColor
+        public string SideBackgroundColorHex
         {
             get
             {
-                return sideBackgroundColor;
+                return sideBackgroundColorHex;
             }
             set
             {
-                sideBackgroundColor = value;
-                OnPropertyChanged(nameof(SideBackgroundColor));
-                OnPropertyChanged(nameof(SideBackgroundBrush));
+                sideBackgroundColorHex = value;
+                OnPropertyChanged(nameof(SideBackgroundColorHex));
             }
         }
 
-        // TODO: Dafür einen Converter schreiben
-        public SolidColorBrush SideBackgroundBrush
-        {
-            get
-            {
-                SolidColorBrush sideBackgroundBrush = new SolidColorBrush(sideBackgroundColor);
-                return sideBackgroundBrush;
-            }
-        }
-
+        /// <summary>
+        /// Ruft das Anfangszeit ab oder legt es fest.
+        /// </summary>
         [DataType(DataType.Time)]
         public DateTime? StartTime
         {
             get
             {
-                return startTime;
+                return RoundToNearestInterval(startTime, TimeSpan.FromMinutes(5));
             }
             set
             {
-                if (endTime < value)
+                //TODO: Schauen das er bei vergleichen nur auf die Uhrzeit achtet
+                if (endTime != null && endTime.Value.TimeOfDay < value.Value.TimeOfDay)
                 {
                     startTime = endTime;
                 }
-                else if (value > DateTime.Today.Add(new TimeSpan(8, 0, 0)))
+                else if (value.Value.TimeOfDay > DateTime.Today.Add(new TimeSpan(8, 0, 0)).TimeOfDay)
                 {
                     startTime = RoundToNearestInterval(value, TimeSpan.FromMinutes(5));
                 }
@@ -214,22 +225,14 @@ namespace WeeklyPlanner.Core.Models
                     startTime = DateTime.Today.Add(new TimeSpan(8, 0, 0));
                 }
                 OnPropertyChanged(nameof(StartTime));
-                OnPropertyChanged(nameof(StartTimeString));
                 OnPropertyChanged(nameof(EntryMargin));
                 OnPropertyChanged(nameof(Height));
             }
         }
 
-        // TODO: Dafür einen Converter schreiben
-        [NotMapped]
-        public string StartTimeString
-        {
-            get
-            {
-                return StartTime.Value.ToString("HH:mm");
-            }
-        }
-
+        /// <summary>
+        /// Ruft den Titel ab oder legt diesen fest.
+        /// </summary>
         [Required]
         public string? Title {
             get
@@ -244,13 +247,52 @@ namespace WeeklyPlanner.Core.Models
             }
         }
 
-        private string? description;
-        private DateTime? appointmentDate = DateTime.Now;
-        private string? appointmentType;
-        private DateTime? endTime;
-        private Color sideBackgroundColor;
-        private DateTime? startTime = DateTime.Now;
-        private string? title;
+        #endregion Properties
+
+        #region Methods
+
+        /// <summary>
+        /// Setzt die Seitenfarbe und Endzeit entsprechend der Art des Termins.
+        /// </summary>
+        private void AppointmentTypeSettings()
+        {
+            if (appointmentType == "Arbeit")
+            {
+                SideBackgroundColorHex = Colors.Red.ToString();
+                if (StartTime.HasValue)
+                    EndTime = StartTime.Value.AddHours(2);
+            }
+            else if (appointmentType == "Freizeit")
+            {
+                SideBackgroundColorHex = Colors.Green.ToString();
+                if (StartTime.HasValue)
+                    EndTime = StartTime.Value.AddHours(0.5);
+            }
+            else if (appointmentType == "Arzttermin")
+            {
+                SideBackgroundColorHex = Colors.Orange.ToString();
+                if (StartTime.HasValue)
+                    EndTime = StartTime.Value.AddHours(1);
+            }
+        }
+
+        /// <summary>
+        /// Löst das <see cref="PropertyChanged"/>-Ereignis aus,
+        /// um Abonnenten über Änderungen an einer Eigenschaft zu informieren.
+        /// </summary>
+        /// <param name="thePropertyName">
+        /// Gibt den Name der Eigenschaft an, deren Wert sich geändert hat.
+        /// Dieser Name wird verwendet, um die Abonnenten zu benachrichtigen, welche spezifische Eigenschaft betroffen ist.
+        /// </param>
+        /// <remarks>
+        /// Diese Methode sollte in den Settern von Eigenschaften aufgerufen werden, wenn sich der Wert der Eigenschaft ändert.
+        /// Wenn das <see cref="PropertyChanged"/>-Ereignis nicht null ist,
+        /// wird es ausgelöst, um alle Abonnenten über die Änderung zu informieren.
+        /// </remarks>
+        protected void OnPropertyChanged(string thePropertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(thePropertyName));
+        }
 
         /// <summary>
         /// Rundet die angegebenen Datum-Uhrzeit auf das nächstgelegene Intervall auf oder ab.
@@ -275,38 +317,25 @@ namespace WeeklyPlanner.Core.Models
             return DateTime.Now;
         }
 
-        /// <summary>
-        /// Setzt die Seitenfarbe und Endzeit entsprechend der Art des Termins.
-        /// </summary>
-        private void AppointmentTypeSettings()
-        {
-            if (appointmentType == "Arbeit")
-            {
-                sideBackgroundColor = Colors.Red;
-                if (StartTime.HasValue)
-                EndTime = StartTime.Value.AddHours(8.5);
-            }
-            else if (appointmentType == "Freizeit")
-            {
-                SideBackgroundColor = Colors.Green;
-                if (StartTime.HasValue)
-                EndTime = StartTime.Value.AddHours(0.5);
-            }
-            else if (appointmentType == "Termin")
-            {
-                SideBackgroundColor = Colors.Orange;
-                if (StartTime.HasValue)
-                EndTime = StartTime.Value.AddHours(1);
-            }
-            OnPropertyChanged(nameof(EndTime));
-        }
+        #endregion Methods
+
+        #region Fields
+
+        private DateTime? appointmentDate = DateTime.Now;
+        private string? appointmentType;
+        private string? description;
+        private DateTime? endTime;
+        private string sideBackgroundColorHex = "#00000000";
+        private DateTime? startTime = DateTime.Now;
+        private string? title;
+
+        #endregion Fields
+
+        #region Events
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        #endregion Events
 
     }
 }

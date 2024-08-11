@@ -1,7 +1,5 @@
-﻿using Calendar;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Windows;
 using WeeklyPlanner.Data.Data;
 using WeeklyPlanner.Data.Repositories;
@@ -33,10 +31,11 @@ namespace Calendar
         {
             // Registering DbContext
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer("Server=DESKTOP-G41ADTG;Database=Calendar;Trusted_Connection=True;Encrypt=True;TrustServerCertificate=True;"));
+                options.UseSqlServer("CONNECTIONSTRING")); // Alle stellen mit CONNECTIONSTRING müssen den Connectionstring bekommen damit
+                                                           // die DB klappt und es muss ein update ausgeführt werden damit die Migrationen ausgeführt werden.
 
             // Registering Repositories
-            services.AddSingleton<IAppointmentRepository, AppointmentRepository>();
+            services.AddSingleton<IAppointmentRepository, AppointmentRepository>(); 
 
             // Registering ViewModels
             services.AddTransient<AppointmentViewModel>();
@@ -44,7 +43,6 @@ namespace Calendar
 
             // Registering Views
             services.AddTransient<AppointmentModalView>();
-            services.AddTransient<AppointmentEntryView>();
             services.AddTransient<WeeklyPlannerView>();
 
             // Registering MainWindow

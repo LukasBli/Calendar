@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using System.Globalization;
 using System.Windows.Controls;
-using System.Windows;
 using WeeklyPlanner.Data.Repositories;
 using WeeklyPlanner.UI.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -9,71 +8,28 @@ using WeeklyPlanner.Core.Models;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
 using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
 
 namespace WeeklyPlanner.UI.ViewModels
 {
     public partial class WeeklyPlannerViewModel : ObservableObject, INotifyPropertyChanged
     {
-        private readonly IServiceProvider mServiceProvider;
-        private readonly IAppointmentRepository mAppointmentRepository;
 
-        public ObservableCollection<AppointmentViewModel> AppointmentViewModels { get; set; } = new ObservableCollection<AppointmentViewModel>();
-
-        public WeeklyPlannerViewModel(IAppointmentRepository appointmentRepository ,IServiceProvider serviceProvider)
+        public WeeklyPlannerViewModel(IAppointmentRepository theAppointmentRepository ,IServiceProvider theServiceProvider)
         {
             SetWeek(DateTime.Now);
-            mServiceProvider = serviceProvider;
-            mAppointmentRepository = appointmentRepository;
-            //LoadAppointments();
+            serviceProvider = theServiceProvider;
+            appointmentRepository = theAppointmentRepository;
+            LoadAppointments();
         }
 
-        [RelayCommand]
-        private void LoadData()
-        {
-            // Implement your logic here
-        }
-
-        [RelayCommand]
-        private void CreateAppointment()
-        {
-            AppointmentModalView window = mServiceProvider.GetRequiredService<AppointmentModalView>();
-            var appointmentViewModel = window.DataContext as AppointmentViewModel;
-            appointmentViewModel.IsNew = true;
-            window.ShowDialog();
-            AppointmentEntryView appointmentEntryView = mServiceProvider.GetRequiredService<AppointmentEntryView>();
-            Grid.SetColumn(appointmentEntryView, 1);
-
-            AppointmentViewModels.Add(appointmentViewModel);
-            OnPropertyChanged(nameof(AppointmentViewModels));
-        }
-
-        // In Arbeits
-        //public async void LoadAppointments()
-        //{
-        //    IEnumerable<Appointment> allAppointments = await mAppointmentRepository.GetAllAsync();
-        //    IEnumerable<Appointment> weekAppointments = allAppointments.Where(appointment => appointment.AppointmentDate.Value <= DateTime.Parse (SundayDate) && appointment.AppointmentDate.Value >= DateTime.Parse (MondayDate));
-        //    AppointmentViewModels.Select(a => new AppointmentViewModel(mAppointmentRepository, mServiceProvider)
-        //    {
-        //        SelectedAppointment = a.SelectedAppointment,
-        //    });
-        //    OnPropertyChanged(nameof(AppointmentViewModel.SelectedAppointment));
-        //}
-
-        [RelayCommand]
-        private void LoadWeeklyplannerView()
-        {
-            var weeklyplannerView = mServiceProvider.GetRequiredService<WeeklyPlannerView>();
-            Grid.SetColumn(weeklyplannerView, 0);
-        }
-
-        #region Events
+        #region Methods
 
         [RelayCommand]
         private void ChangeToLastWeek()
         {
             currentDateTime = currentDateTime.AddDays(-7);
             SetWeek(currentDateTime);
+            LoadAppointments();
         }
 
         [RelayCommand]
@@ -81,11 +37,48 @@ namespace WeeklyPlanner.UI.ViewModels
         {
             currentDateTime = currentDateTime.AddDays(7);
             SetWeek(currentDateTime);
+            LoadAppointments();
         }
 
-        #endregion Events
+        [RelayCommand]
+        private void CreateAppointment()
+        {
+            AppointmentModalView window = serviceProvider.GetRequiredService<AppointmentModalView>();
+            var appointmentViewModel = window.DataContext as AppointmentViewModel;
+            appointmentViewModel.IsNew = true;
+            window.ShowDialog();
+            if (appointmentViewModel.SelectedAppointment != null                                       &&
+                !appointmentViewModel.IsNew                                                            &&
+                appointmentViewModel.SelectedAppointment.AppointmentDate >= DateTime.Parse(MondayDate) &&
+                appointmentViewModel.SelectedAppointment.AppointmentDate <= DateTime.Parse(SundayDate))
+            {
+                AppointmentViewModels.Add(appointmentViewModel);
+                OnPropertyChanged(nameof(AppointmentViewModels));
+            }
+        }
 
-        #region Methods
+        // In Arbeits
+        public async void LoadAppointments()
+        {
+            AppointmentViewModels.Clear();
+            IEnumerable<Appointment> allAppointments = await appointmentRepository.GetAllAsync();
+            IEnumerable<Appointment> weekAppointments = allAppointments.Where(appointment => appointment != null                                             &&
+                                                                                             appointment.AppointmentDate.Value <= DateTime.Parse(SundayDate) &&
+                                                                                             appointment.AppointmentDate.Value >= DateTime.Parse(MondayDate));
+            IEnumerable<AppointmentViewModel> appointmentViewModels = weekAppointments.Select(a => new AppointmentViewModel(appointmentRepository, serviceProvider)
+            {
+                SelectedAppointment = a
+            });
+            AppointmentViewModels = new ObservableCollection<AppointmentViewModel>(appointmentViewModels);
+            OnPropertyChanged(nameof(AppointmentViewModels));
+        }
+
+        [RelayCommand]
+        private void LoadWeeklyplannerView()
+        {
+            var weeklyplannerView = serviceProvider.GetRequiredService<WeeklyPlannerView>();
+            Grid.SetColumn(weeklyplannerView, 0);
+        }
 
         /// <summary>
         /// Setzt die Wochentage des angegebenen Datums.
@@ -103,7 +96,7 @@ namespace WeeklyPlanner.UI.ViewModels
 
             CultureInfo cultureInfo = CultureInfo.CurrentCulture;
             int weekOfYear = cultureInfo.Calendar.GetWeekOfYear(theDate, cultureInfo.DateTimeFormat.CalendarWeekRule, cultureInfo.DateTimeFormat.FirstDayOfWeek);
-            mWeekOfYearText = weekOfYear.ToString() + " KW";
+            weekOfYearText = weekOfYear.ToString() + " KW";
             OnPropertyChanged(nameof(MondayDate));
             OnPropertyChanged(nameof(TuesdayDate));
             OnPropertyChanged(nameof(WednesDate));
@@ -117,6 +110,12 @@ namespace WeeklyPlanner.UI.ViewModels
         #endregion Methods
 
         #region Properties
+
+        public ObservableCollection<AppointmentViewModel> AppointmentViewModels
+        {
+            get;
+            set;
+        } = new ObservableCollection<AppointmentViewModel>();
 
         /// <summary>
         /// Ruft das Datum vom Freitag ab.
@@ -179,7 +178,7 @@ namespace WeeklyPlanner.UI.ViewModels
         /// </summary>
         public string WeekOfYearText
         {
-            get { return mWeekOfYearText; }
+            get { return weekOfYearText; }
         }
 
         #endregion Properties
@@ -208,18 +207,18 @@ namespace WeeklyPlanner.UI.ViewModels
 
         #region Fields
 
+        private readonly IAppointmentRepository appointmentRepository;
+        private DateTime                        currentDateTime = DateTime.Now;
+        private readonly IServiceProvider       serviceProvider;
         [ObservableProperty]
-        private List<string> weekDays = new List<string>();
-
-        private string mWeekOfYearText;
-
-        private DateTime currentDateTime = DateTime.Now;
+        private List<string>                    weekDays        = new List<string>();
+        private string                          weekOfYearText;
 
         #endregion Fields
 
         #region Events
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         #endregion Events
     }

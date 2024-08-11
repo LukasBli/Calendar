@@ -8,7 +8,9 @@
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <converters:DateTimeToDayOfWeekInIntConverter x:Key="dateTimeToDayOfWeekInIntConverter" />
+        <converters:DateTimeToDayOfWeekInIntConverter x:Key="dateTimeToDayOfWeekInIntConverter"/>
+        <converters:ColorHexStringToSolidColorBrushConverter x:Key="colorHexStringToSolidColorBrushConverter"/>
+        <converters:DateTimeToHHmmStringConverter x:Key="dateTimeToHHmmStringConverter"/>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -174,7 +176,9 @@
                                             </Grid.ColumnDefinitions>
 
                                             <!-- Inneres Border -->
-                                            <Border Background="{Binding SelectedAppointment.SideBackgroundBrush, UpdateSourceTrigger=PropertyChanged}"
+                                            <Border Background="{Binding SelectedAppointment.SideBackgroundColorHex,
+                                                                         Converter={StaticResource colorHexStringToSolidColorBrushConverter},
+                                                                         UpdateSourceTrigger=PropertyChanged}"
                                             BorderBrush="Black"
                                             BorderThickness="1"
                                             Width="10"
@@ -190,7 +194,7 @@
 
                                             <!-- StackPanel 2 -->
                                             <StackPanel Grid.Column="2">
-                                                <TextBlock Text="{Binding SelectedAppointment.StartTimeString}" Margin="3,1,0,0"/>
+                                                <TextBlock Text="{Binding SelectedAppointment.StartTime, Converter={StaticResource dateTimeToHHmmStringConverter}}" Margin="3,1,0,0"/>
                                             </StackPanel>
                                         </Grid>
                                     </Border>

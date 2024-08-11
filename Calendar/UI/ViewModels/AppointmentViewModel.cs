@@ -1,10 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Windows;
 using WeeklyPlanner.Core.Models;
-using WeeklyPlanner.Data.Data;
 using WeeklyPlanner.Data.Repositories;
 using WeeklyPlanner.UI.Views;
 
@@ -12,9 +9,14 @@ namespace WeeklyPlanner.UI.ViewModels
 {
     public partial class AppointmentViewModel : ObservableObject
     {
-        private readonly IAppointmentRepository mAppointmentRepository;
-        private readonly IServiceProvider mServiceProvider;
-        private Appointment selectedAppointment = new Appointment();
+
+        public AppointmentViewModel(IAppointmentRepository theAppointmentRepository, IServiceProvider theServiceProvider)
+        {
+            appointmentRepository = theAppointmentRepository;
+            serviceProvider = theServiceProvider;
+        }
+
+        #region Properties
 
         public Appointment SelectedAppointment
         {
@@ -28,13 +30,20 @@ namespace WeeklyPlanner.UI.ViewModels
             }
         }
 
-        [ObservableProperty]
-        private bool isNew = false;
+        #endregion Properties
 
-        public AppointmentViewModel(IAppointmentRepository theAppointmentRepository, IServiceProvider serviceProvider)
+        #region Methods
+
+        [RelayCommand]
+        private void OpenAppointment()
         {
-            mAppointmentRepository = theAppointmentRepository;
-            mServiceProvider = serviceProvider;
+            AppointmentModalView window = serviceProvider.GetRequiredService<AppointmentModalView>();
+            var dataContext = window.DataContext as AppointmentViewModel;
+            if (dataContext != null)
+            {
+                dataContext.SelectedAppointment = SelectedAppointment;
+                window.ShowDialog();
+            }
         }
 
         [RelayCommand]
@@ -45,25 +54,28 @@ namespace WeeklyPlanner.UI.ViewModels
             {
                 if (IsNew)
                 {
-                    await mAppointmentRepository.AddAsync(SelectedAppointment);
+                    await appointmentRepository.AddAsync(SelectedAppointment);
+                    IsNew = false;
                 }
                 else
                 {
-                    await mAppointmentRepository.UpdateAsync(SelectedAppointment);
+                    await appointmentRepository.UpdateAsync(SelectedAppointment);
                 }
-                AppointmentEntryView appointmentEntryView = mServiceProvider.GetRequiredService<AppointmentEntryView>();
-                appointmentEntryView.DataContext = window.DataContext;
             }
             window.Close();
         }
 
-        [RelayCommand]
-        private async Task OpenAppointment()
-        {
-            AppointmentModalView window = mServiceProvider.GetRequiredService<AppointmentModalView>();
-            var dataContext = window.DataContext as AppointmentViewModel;
-            dataContext.SelectedAppointment = SelectedAppointment;
-            window.ShowDialog();
-        }
+        #endregion Methods
+
+        #region Fields
+
+        private readonly IAppointmentRepository appointmentRepository;
+        [ObservableProperty]
+        private bool isNew = false;
+        private Appointment selectedAppointment = new Appointment();
+        private readonly IServiceProvider serviceProvider;
+
+        #endregion Fields
+
     }
 }

@@ -4,9 +4,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:converters="clr-namespace:WeeklyPlanner.UI.Converters"
         mc:Ignorable="d"
         Title="Termin"
         Height="370" Width="400" ResizeMode="NoResize">
+    <Window.Resources>
+        <converters:ColorHexStringToColorConverter x:Key="colorHexStringToColorConverter"/>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="100"/>
@@ -50,7 +54,7 @@
         <xctk:TimePicker Format="ShortTime" Grid.Row="5" Value="{Binding SelectedAppointment.StartTime, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.Column="1" Margin="3,2,5,2" HorizontalAlignment="Left" Width="100"/>
         <TextBlock Text="-" Grid.Row="5" Grid.Column="1" Margin="3,2,3,2" HorizontalAlignment="Center"/>
         <xctk:TimePicker Format="ShortTime" Grid.Row="5" Value="{Binding SelectedAppointment.EndTime, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.Column="1" Margin="3,2,5,2" HorizontalAlignment="Right" Width="100"/>
-        <xctk:ColorPicker Grid.Row="6" Grid.Column="1" SelectedColor="{Binding SelectedAppointment.SideBackgroundColor}" DisplayColorAndName="True"  Margin="3,3,5,3"/>
+        <xctk:ColorPicker Grid.Row="6" Grid.Column="1" SelectedColor="{Binding SelectedAppointment.SideBackgroundColorHex, Converter={StaticResource colorHexStringToColorConverter}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" DisplayColorAndName="True"  Margin="3,3,5,3"/>
 
         <Button Content="Speichern"
                             Grid.Row="12"
