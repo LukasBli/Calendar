@@ -3,11 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:v="clr-namespace:WeeklyPlanner.UI.Views"
         xmlns:local="clr-namespace:Calendar"
-        xmlns:view="clr-namespace:WeeklyPlanner.View"
         mc:Ignorable="d"
-        Title="Wochenplanner" Height="450" Width="800">
+        Title="Kalender" Height="450" Width="800">
     <Grid>
-        <view:WeeklyPlannerControl/>
+        <v:WeeklyPlannerView/>
     </Grid>
 </Window>
