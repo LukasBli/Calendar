@@ -10,14 +10,27 @@ namespace WeeklyPlanner.UI.ViewModels
     public partial class AppointmentViewModel : ObservableObject
     {
 
+        #region Constructors
+
+        /// <summary>
+        /// Stellt den Konstruktor dar.
+        /// Initialisiert eine neue Instanz des ViewModels mit dem angegebenen Repository und dem ServiceProvider.
+        /// </summary>
+        /// <param name="theAppointmentRepository">Das Repository für die Verwaltung von Terminen.</param>
+        /// <param name="theServiceProvider">Der ServiceProvider, der für die Bereitstellung von Diensten verwendet wird.</param>
         public AppointmentViewModel(IAppointmentRepository theAppointmentRepository, IServiceProvider theServiceProvider)
         {
             appointmentRepository = theAppointmentRepository;
             serviceProvider = theServiceProvider;
         }
 
+        #endregion Constructors
+
         #region Properties
 
+        /// <summary>
+        /// Ruft den ausgewählten Termin ab oder legt ihn fest.
+        /// </summary>
         public Appointment SelectedAppointment
         {
             get
@@ -34,6 +47,9 @@ namespace WeeklyPlanner.UI.ViewModels
 
         #region Methods
 
+        /// <summary>
+        /// Öffnet das Fenster zur Bearbeitung des ausgewählten Termins.
+        /// </summary>
         [RelayCommand]
         private void OpenAppointment()
         {
@@ -46,10 +62,14 @@ namespace WeeklyPlanner.UI.ViewModels
             }
         }
 
+        /// <summary>
+        /// Speichert den aktuellen Termin. Falls der Termin neu ist, wird er hinzugefügt, andernfalls wird er aktualisiert.
+        /// </summary>
+        /// <param name="window">Das Fenster, das nach dem Speichern geschlossen wird.</param>
+        /// <returns>Ein Task, der den asynchronen Speichervorgang repräsentiert.</returns>
         [RelayCommand]
         private async Task SaveAppointment(AppointmentModalView window)
         {
-
             if (SelectedAppointment != null)
             {
                 if (IsNew)

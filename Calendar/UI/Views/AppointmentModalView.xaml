@@ -42,11 +42,11 @@
         <TextBlock Text="Von/Bis"               Grid.Row="5" Margin="3" VerticalAlignment="Center"/>
         <TextBlock Text="Hintergrund"           Grid.Row="6" Margin="3" VerticalAlignment="Center"/>
 
-        <ComboBox Text="{Binding SelectedAppointment.Title, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" IsEditable="True" Grid.Column="1" Margin="3,3,5,3" VerticalContentAlignment="Center"/>
+        <TextBox Text="{Binding SelectedAppointment.Title, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.Column="1" Margin="3,3,5,3" VerticalContentAlignment="Center"/>
         <ComboBox Text="{Binding SelectedAppointment.AppointmentType, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" IsEditable="True" Grid.Row="1" Grid.Column="1" Margin="3,3,5,3">
             <ComboBoxItem Content="Freizeit"/>
             <ComboBoxItem Content="Arbeit"/>
-            <ComboBoxItem Content="Termin"/>
+            <ComboBoxItem Content="Arzttermin"/>
         </ComboBox>
         <TextBox Text="{Binding SelectedAppointment.Description}" Grid.Row="2" Grid.Column="1" Margin="3,3,5,3" AcceptsReturn="True"/>
         <CheckBox IsChecked="{Binding SelectedAppointment.IsFullDay}" Grid.Row="3" Grid.Column="1" Margin="3" VerticalContentAlignment="Center"/>

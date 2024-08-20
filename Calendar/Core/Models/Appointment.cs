@@ -211,7 +211,6 @@ namespace WeeklyPlanner.Core.Models
             }
             set
             {
-                //TODO: Schauen das er bei vergleichen nur auf die Uhrzeit achtet
                 if (endTime != null && endTime.Value.TimeOfDay < value.Value.TimeOfDay)
                 {
                     startTime = endTime;
