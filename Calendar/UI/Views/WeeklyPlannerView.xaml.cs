@@ -1,6 +1,4 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using WeeklyPlanner.UI.ViewModels;
+﻿using System.Windows.Controls;
 
 namespace WeeklyPlanner.UI.Views
 {

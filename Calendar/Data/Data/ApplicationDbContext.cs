@@ -1,9 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WeeklyPlanner.Core.Models;
 
 namespace WeeklyPlanner.Data.Data
@@ -24,7 +19,7 @@ namespace WeeklyPlanner.Data.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("CONNECTIONSTRING");
+                optionsBuilder.UseInMemoryDatabase("TestDB");
             }
         }
 

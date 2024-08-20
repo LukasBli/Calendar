@@ -14,7 +14,16 @@ namespace WeeklyPlanner.UI.ViewModels
     public partial class WeeklyPlannerViewModel : ObservableObject, INotifyPropertyChanged
     {
 
-        public WeeklyPlannerViewModel(IAppointmentRepository theAppointmentRepository ,IServiceProvider theServiceProvider)
+        #region Constructors
+
+        /// <summary>
+        /// Stellt den Konstruktor dar.
+        /// Initialisiert eine neue Instanz des ViewModels mit dem angegebenen Repository und ServiceProvider,
+        /// setzt die aktuelle Woche und lädt die Termine.
+        /// </summary>
+        /// <param name="theAppointmentRepository">Das Repository für die Verwaltung von Terminen.</param>
+        /// <param name="theServiceProvider">Der ServiceProvider, der für die Bereitstellung von Diensten verwendet wird.</param>
+        public WeeklyPlannerViewModel(IAppointmentRepository theAppointmentRepository, IServiceProvider theServiceProvider)
         {
             SetWeek(DateTime.Now);
             serviceProvider = theServiceProvider;
@@ -22,8 +31,13 @@ namespace WeeklyPlanner.UI.ViewModels
             LoadAppointments();
         }
 
+        #endregion Constructors
+
         #region Methods
 
+        /// <summary>
+        /// Wechselt zur letzten Woche, aktualisiert die Anzeige und lädt die Termine für die ausgewählte Woche.
+        /// </summary>
         [RelayCommand]
         private void ChangeToLastWeek()
         {
@@ -32,6 +46,9 @@ namespace WeeklyPlanner.UI.ViewModels
             LoadAppointments();
         }
 
+        /// <summary>
+        /// Wechselt zur nächsten Woche, aktualisiert die Anzeige und lädt die Termine für die ausgewählte Woche.
+        /// </summary>
         [RelayCommand]
         private void ChangeToNextWeek()
         {
@@ -40,6 +57,10 @@ namespace WeeklyPlanner.UI.ViewModels
             LoadAppointments();
         }
 
+        /// <summary>
+        /// Erstellt einen neuen Termin und zeigt das Terminfenster an. 
+        /// Wenn der Termin im aktuellen Wochenbereich liegt, wird er zur Wochenübersicht hinzugefügt.
+        /// </summary>
         [RelayCommand]
         private void CreateAppointment()
         {
@@ -47,8 +68,8 @@ namespace WeeklyPlanner.UI.ViewModels
             var appointmentViewModel = window.DataContext as AppointmentViewModel;
             appointmentViewModel.IsNew = true;
             window.ShowDialog();
-            if (appointmentViewModel.SelectedAppointment != null                                       &&
-                !appointmentViewModel.IsNew                                                            &&
+            if (appointmentViewModel.SelectedAppointment != null &&
+                !appointmentViewModel.IsNew &&
                 appointmentViewModel.SelectedAppointment.AppointmentDate >= DateTime.Parse(MondayDate) &&
                 appointmentViewModel.SelectedAppointment.AppointmentDate <= DateTime.Parse(SundayDate))
             {
@@ -57,12 +78,15 @@ namespace WeeklyPlanner.UI.ViewModels
             }
         }
 
-        // In Arbeits
+        /// <summary>
+        /// Lädt alle Termine und filtert diese auf die aktuelle Woche. 
+        /// Erstellt und aktualisiert die Sammlung der Termin-ViewModels.
+        /// </summary>
         public async void LoadAppointments()
         {
             AppointmentViewModels.Clear();
             IEnumerable<Appointment> allAppointments = await appointmentRepository.GetAllAsync();
-            IEnumerable<Appointment> weekAppointments = allAppointments.Where(appointment => appointment != null                                             &&
+            IEnumerable<Appointment> weekAppointments = allAppointments.Where(appointment => appointment != null &&
                                                                                              appointment.AppointmentDate.Value <= DateTime.Parse(SundayDate) &&
                                                                                              appointment.AppointmentDate.Value >= DateTime.Parse(MondayDate));
             IEnumerable<AppointmentViewModel> appointmentViewModels = weekAppointments.Select(a => new AppointmentViewModel(appointmentRepository, serviceProvider)
@@ -73,6 +97,9 @@ namespace WeeklyPlanner.UI.ViewModels
             OnPropertyChanged(nameof(AppointmentViewModels));
         }
 
+        /// <summary>
+        /// Lädt die Wochenplaner-Ansicht und platziert sie im Grid.
+        /// </summary>
         [RelayCommand]
         private void LoadWeeklyplannerView()
         {
@@ -111,6 +138,10 @@ namespace WeeklyPlanner.UI.ViewModels
 
         #region Properties
 
+        /// <summary>
+        /// Sammlung von AppointmentViewModel-Objekten, die die Termine der aktuellen Woche repräsentieren.
+        /// Diese Eigenschaft wird verwendet, um die Termine im Wochenplaner anzuzeigen und zu verwalten.
+        /// </summary>
         public ObservableCollection<AppointmentViewModel> AppointmentViewModels
         {
             get;
