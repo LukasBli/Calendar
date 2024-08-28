@@ -32,11 +32,24 @@
             <ColumnDefinition Width="8"/>
         </Grid.ColumnDefinitions>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0" Grid.ColumnSpan="10">
-            <Button Content="&lt;" Width="30" Height="30" Command="{Binding ChangeToLastWeekCommand}" FontWeight="Bold"/>
-            <TextBlock Text="{Binding WeekOfYearText, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,10,0" VerticalAlignment="Center" FontWeight="Bold"/>
-            <Button Content=">" Width="30" Height="30" Command="{Binding ChangeToNextWeekCommand}" FontWeight="Bold"/>
-        </StackPanel>
+        <Grid Margin="0,3,0,0" Grid.Row="0" Grid.ColumnSpan="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="110"/>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="30"/>
+                <ColumnDefinition Width="60"/>
+                <ColumnDefinition Width="30"/>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="110"/>
+                <ColumnDefinition Width="25"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Content="+ Termin anlegen" Command="{Binding CreateAppointmentCommand}" FontWeight="Bold" Grid.Column="1"/>
+            <Button Content="&lt;" Command="{Binding ChangeToLastWeekCommand}" FontWeight="Bold" Grid.Column="3"/>
+            <TextBlock Text="{Binding WeekOfYearText, UpdateSourceTrigger=PropertyChanged}" FontWeight="Bold" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <Button Content=">" Command="{Binding ChangeToNextWeekCommand}" FontWeight="Bold" Grid.Column="5"/>
+        </Grid>
         <Border Name="borMonday" BorderBrush="Black" BorderThickness="1" Grid.Row="1" Grid.Column="1" Margin="0,3,0,0">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                 <TextBlock Text="Montag" FontSize="15" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -106,14 +119,7 @@
                 <Border BorderBrush="Black" BorderThickness="1" Grid.Column="5" Height="1440" VerticalAlignment="Top"/>
                 <Border BorderBrush="Black" BorderThickness="1" Grid.Column="6" Height="1440" VerticalAlignment="Top"/>
                 <Border BorderBrush="Black" BorderThickness="1" Grid.Column="7" Height="1440" VerticalAlignment="Top"/>
-                <Border BorderBrush="Black" BorderThickness="1" Grid.Column="0" Height="120" VerticalAlignment="Top">
-                    <Border.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="Termin erstellen" Command="{Binding CreateAppointmentCommand}"/>
-                        </ContextMenu>
-                    </Border.ContextMenu>
-                    <TextBlock Text="8:00" HorizontalAlignment="Center" Margin="0,0,1,0"/>
-                </Border>
+                <TextBlock Text="8:00" HorizontalAlignment="Center" Margin="0,0,1,0"/>
                 <Border BorderBrush="Gray" BorderThickness="1" Grid.Column="1" Grid.ColumnSpan="7" Height="1" VerticalAlignment="Top" Margin="0,120,0,0"/>
                 <TextBlock Text="9:00" HorizontalAlignment="Center" Margin="0,120,1,0"/>
                 <Border BorderBrush="Gray" BorderThickness="1" Grid.Column="1" Grid.ColumnSpan="7" Height="1" VerticalAlignment="Top" Margin="0,240,0,0"/>
