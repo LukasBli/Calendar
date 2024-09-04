@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
+using System.Windows;
 using WeeklyPlanner.Core.Models;
 using WeeklyPlanner.Data.Repositories;
 using WeeklyPlanner.UI.Views;
@@ -29,6 +31,18 @@ namespace WeeklyPlanner.UI.ViewModels
         #region Properties
 
         /// <summary>
+        /// Ruft das Datum des Wochenendes ab.
+        /// </summary>
+        public DateTime EndOfTheWeek
+        {
+            get
+            {
+                var weeklyPlannerViewModel = serviceProvider.GetRequiredService<WeeklyPlannerViewModel>();
+                return DateTime.Parse(weeklyPlannerViewModel.SundayDate);
+            }
+        }
+
+        /// <summary>
         /// Ruft den ausgewählten Termin ab oder legt ihn fest.
         /// </summary>
         public Appointment SelectedAppointment
@@ -43,9 +57,31 @@ namespace WeeklyPlanner.UI.ViewModels
             }
         }
 
+        /// <summary>
+        /// Ruft das Datum des Wochenanfangs ab.
+        /// </summary>
+        public DateTime StartOfTheWeek
+        {
+            get
+            {
+                var weeklyPlannerViewModel = serviceProvider.GetRequiredService<WeeklyPlannerViewModel>();
+                return DateTime.Parse (weeklyPlannerViewModel.MondayDate);
+            }
+        }
+
         #endregion Properties
 
         #region Methods
+
+        /// <summary>
+        /// Schließt das Fenster zur Bearbeitung des ausgewählten Termins.
+        /// </summary>
+        /// <param name="window">Das Fenster, das geschlossen wird.</param>
+        [RelayCommand]
+        private void CloseAppointment(AppointmentModalView window)
+        {
+            window.Close();
+        }
 
         /// <summary>
         /// Öffnet das Fenster zur Bearbeitung des ausgewählten Termins.

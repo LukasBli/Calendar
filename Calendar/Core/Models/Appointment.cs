@@ -78,7 +78,7 @@ namespace WeeklyPlanner.Core.Models
             set
             {
                 if (value != null) {
-                    if (value.Value.TimeOfDay < startTime.Value.TimeOfDay)
+                    if (startTime != null && value.Value.TimeOfDay < startTime.Value.TimeOfDay)
                     {
                         endTime = startTime;
                     }
@@ -92,6 +92,8 @@ namespace WeeklyPlanner.Core.Models
                     }
                     OnPropertyChanged(nameof(EndTime));
                     OnPropertyChanged(nameof(Height));
+                    OnPropertyChanged(nameof(IsSaveButtonEnabled));
+                    OnPropertyChanged(nameof(IsFullDay));
                 }
             }
         }
@@ -178,8 +180,10 @@ namespace WeeklyPlanner.Core.Models
         {
             get
             {
-                return !string.IsNullOrEmpty(Title) &&
-                       !string.IsNullOrEmpty(AppointmentType);
+                return !string.IsNullOrEmpty(Title)             &&
+                       !string.IsNullOrEmpty(AppointmentType)   &&
+                       StartTime != null                        &&
+                       EndTime != null;
             }
         }
 
@@ -207,7 +211,7 @@ namespace WeeklyPlanner.Core.Models
         {
             get
             {
-                return RoundToNearestInterval(startTime, TimeSpan.FromMinutes(5));
+                return startTime;
             }
             set
             {
@@ -215,9 +219,14 @@ namespace WeeklyPlanner.Core.Models
                 {
                     startTime = endTime;
                 }
-                else if (value.Value.TimeOfDay > DateTime.Today.Add(new TimeSpan(8, 0, 0)).TimeOfDay)
+                else if (value.Value.TimeOfDay > DateTime.Today.Add(new TimeSpan(8, 0, 0)).TimeOfDay &&
+                         value.Value.TimeOfDay < DateTime.Today.Add(new TimeSpan(20, 0, 0)).TimeOfDay)
                 {
                     startTime = RoundToNearestInterval(value, TimeSpan.FromMinutes(5));
+                }
+                else if (value.Value.TimeOfDay >= DateTime.Today.Add(new TimeSpan(20, 0, 0)).TimeOfDay)
+                {
+                    startTime = DateTime.Today.Add(new TimeSpan(20, 0, 0));
                 }
                 else
                 {
@@ -226,6 +235,8 @@ namespace WeeklyPlanner.Core.Models
                 OnPropertyChanged(nameof(StartTime));
                 OnPropertyChanged(nameof(EntryMargin));
                 OnPropertyChanged(nameof(Height));
+                OnPropertyChanged(nameof(IsSaveButtonEnabled));
+                OnPropertyChanged(nameof(IsFullDay));
             }
         }
 
@@ -258,20 +269,23 @@ namespace WeeklyPlanner.Core.Models
             if (appointmentType == "Arbeit")
             {
                 SideBackgroundColorHex = Colors.Red.ToString();
-                if (StartTime.HasValue)
-                    EndTime = StartTime.Value.AddHours(2);
+                if (! StartTime.HasValue)
+                    StartTime = DateTime.Now;
+                EndTime = StartTime.Value.AddHours(2);
             }
             else if (appointmentType == "Freizeit")
             {
                 SideBackgroundColorHex = Colors.Green.ToString();
-                if (StartTime.HasValue)
-                    EndTime = StartTime.Value.AddHours(0.5);
+                if (! StartTime.HasValue)
+                    StartTime = DateTime.Now;
+                EndTime = StartTime.Value.AddHours(0.5);
             }
             else if (appointmentType == "Arzttermin")
             {
                 SideBackgroundColorHex = Colors.Orange.ToString();
-                if (StartTime.HasValue)
-                    EndTime = StartTime.Value.AddHours(1);
+                if (! StartTime.HasValue)
+                    StartTime = DateTime.Now;
+                EndTime = StartTime.Value.AddHours(1);
             }
         }
 
@@ -325,7 +339,7 @@ namespace WeeklyPlanner.Core.Models
         private string? description;
         private DateTime? endTime;
         private string sideBackgroundColorHex = "#00000000";
-        private DateTime? startTime = DateTime.Now;
+        private DateTime? startTime;
         private string? title;
 
         #endregion Fields

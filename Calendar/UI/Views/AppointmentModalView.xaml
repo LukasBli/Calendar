@@ -18,9 +18,9 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
-            <!-- Typ -->
+            <!-- Titel -->
             <RowDefinition Height="*"/>
-            <!-- Name -->
+            <!-- Typ -->
             <RowDefinition Height="5*"/>
             <!-- Beschreibung -->
             <RowDefinition Height="*"/>
@@ -50,22 +50,41 @@
         </ComboBox>
         <TextBox Text="{Binding SelectedAppointment.Description}" Grid.Row="2" Grid.Column="1" Margin="3,3,5,3" AcceptsReturn="True"/>
         <CheckBox IsChecked="{Binding SelectedAppointment.IsFullDay}" Grid.Row="3" Grid.Column="1" Margin="3" VerticalContentAlignment="Center"/>
-        <DatePicker SelectedDate="{Binding SelectedAppointment.AppointmentDate}" Grid.Row="4" Grid.Column="1" Margin="3,2,5,2"/>
+        <DatePicker SelectedDate="{Binding SelectedAppointment.AppointmentDate}" Grid.Row="4" Grid.Column="1" Margin="3,2,5,2">
+            <DatePicker.Style>
+                <Style TargetType="DatePicker">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsNew}" Value="False">
+                            <Setter Property="DisplayDateStart" Value="{Binding StartOfTheWeek, Mode=OneWay}"/>
+                            <Setter Property="DisplayDateEnd" Value="{Binding EndOfTheWeek, Mode=OneWay}"/>
+                        </DataTrigger> 
+                    </Style.Triggers>
+                </Style>
+            </DatePicker.Style>
+        </DatePicker>
         <xctk:TimePicker Format="ShortTime" Grid.Row="5" Value="{Binding SelectedAppointment.StartTime, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.Column="1" Margin="3,2,5,2" HorizontalAlignment="Left" Width="100"/>
         <TextBlock Text="-" Grid.Row="5" Grid.Column="1" Margin="3,2,3,2" HorizontalAlignment="Center"/>
         <xctk:TimePicker Format="ShortTime" Grid.Row="5" Value="{Binding SelectedAppointment.EndTime, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.Column="1" Margin="3,2,5,2" HorizontalAlignment="Right" Width="100"/>
         <xctk:ColorPicker Grid.Row="6" Grid.Column="1" SelectedColor="{Binding SelectedAppointment.SideBackgroundColorHex, Converter={StaticResource colorHexStringToColorConverter}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" DisplayColorAndName="True"  Margin="3,3,5,3"/>
 
         <Button Content="Speichern"
-                            Grid.Row="12"
-                            Grid.Column="1"
-                            IsEnabled="{Binding SelectedAppointment.IsSaveButtonEnabled}"
-                            Command="{Binding SaveAppointmentCommand}"
-                            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
-                            Margin="3,3,90,5"
-                            Width="80"
-                            HorizontalAlignment="Right"
-                            Background="DarkGray"/>
-        <Button Content="Abbrechen" Grid.Row="12" Grid.Column="1" Margin="3,3,5,5" Width="80" HorizontalAlignment="Right"/>
+                Grid.Row="12"
+                Grid.Column="1"
+                IsEnabled="{Binding SelectedAppointment.IsSaveButtonEnabled}"
+                Command="{Binding SaveAppointmentCommand}"
+                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                Margin="3,3,90,5"
+                Width="80"
+                HorizontalAlignment="Right"
+                Background="DarkGray"/>
+        
+        <Button Content="Abbrechen"
+                Grid.Row="12"
+                Grid.Column="1"
+                Command="{Binding CloseAppointmentCommand}"
+                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                Margin="3,3,5,5"
+                Width="80"
+                HorizontalAlignment="Right"/>
     </Grid>
 </Window>
