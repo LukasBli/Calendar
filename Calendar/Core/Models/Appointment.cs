@@ -82,9 +82,14 @@ namespace WeeklyPlanner.Core.Models
                     {
                         endTime = startTime;
                     }
-                    else if (value.Value.TimeOfDay < DateTime.Today.Add(new TimeSpan(20, 0, 0)).TimeOfDay)
+                    else if (value.Value.TimeOfDay < DateTime.Today.Add(new TimeSpan(20, 0, 0)).TimeOfDay &&
+                             value.Value.TimeOfDay > DateTime.Today.Add(new TimeSpan(8 , 0, 0)).TimeOfDay)
                     {
                         endTime = RoundToNearestInterval(value, TimeSpan.FromMinutes(5));
+                    }
+                    else if (value.Value.TimeOfDay <= DateTime.Today.Add(new TimeSpan(8, 0, 0)).TimeOfDay)
+                    {
+                        startTime = DateTime.Today.Add(new TimeSpan(8, 0, 0));
                     }
                     else
                     {
@@ -219,7 +224,7 @@ namespace WeeklyPlanner.Core.Models
                 {
                     startTime = endTime;
                 }
-                else if (value.Value.TimeOfDay > DateTime.Today.Add(new TimeSpan(8, 0, 0)).TimeOfDay &&
+                else if (value.Value.TimeOfDay > DateTime.Today.Add(new TimeSpan(8 , 0, 0)).TimeOfDay &&
                          value.Value.TimeOfDay < DateTime.Today.Add(new TimeSpan(20, 0, 0)).TimeOfDay)
                 {
                     startTime = RoundToNearestInterval(value, TimeSpan.FromMinutes(5));
